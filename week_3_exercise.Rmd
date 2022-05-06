@@ -16,6 +16,7 @@ library(readr)
 library(sf)
 library(dplyr)
 library(ggplot2)
+library(gridExtra)
 
 ```
 
@@ -101,6 +102,52 @@ ggplot() +
   scale_color_discrete("Segment Number") +
   ggtitle("All Segments with >= 5 Nodes")
 
+
+```
+
+# Task 5
+
+```{r}
+
+pedestrian <- read_delim("pedestrian.csv", ",") %>% data.frame()
+
+tra1 <- ggplot() +
+  geom_point(pedestrian, mapping = aes(E, N), alpha = 0.1) +
+  geom_point(subset(pedestrian, TrajID %in% "1"), mapping = aes(E, N), color = "red") +
+  geom_path(subset(pedestrian, TrajID %in% "1"), mapping = aes(E, N), color = "red") +
+  ggtitle("TrajID: 1")
+
+tra2 <- ggplot() +
+  geom_point(pedestrian, mapping = aes(E, N), alpha = 0.1) +
+  geom_point(subset(pedestrian, TrajID %in% "2"), mapping = aes(E, N), color = "yellow") +
+  geom_path(subset(pedestrian, TrajID %in% "2"), mapping = aes(E, N), color = "yellow") +
+  ggtitle("TrajID: 2")
+
+tra3 <- ggplot() +
+  geom_point(pedestrian, mapping = aes(E, N), alpha = 0.1) +
+  geom_point(subset(pedestrian, TrajID %in% "3"), mapping = aes(E, N), color = "green") +
+  geom_path(subset(pedestrian, TrajID %in% "3"), mapping = aes(E, N), color = "green") +
+  ggtitle("TrajID: 3")
+
+tra4 <- ggplot() +
+  geom_point(pedestrian, mapping = aes(E, N), alpha = 0.1) +
+  geom_point(subset(pedestrian, TrajID %in% "4"), mapping = aes(E, N), color = "darkgreen") +
+  geom_path(subset(pedestrian, TrajID %in% "4"), mapping = aes(E, N), color = "darkgreen") +
+  ggtitle("TrajID: 4")
+
+tra5 <- ggplot() +
+  geom_point(pedestrian, mapping = aes(E, N), alpha = 0.1) +
+  geom_point(subset(pedestrian, TrajID %in% "5"), mapping = aes(E, N), color = "blue") +
+  geom_path(subset(pedestrian, TrajID %in% "5"), mapping = aes(E, N), color = "blue") +
+  ggtitle("TrajID: 5")
+
+tra6 <- ggplot() +
+  geom_point(pedestrian, mapping = aes(E, N), alpha = 0.1) +
+  geom_point(subset(pedestrian, TrajID %in% "6"), mapping = aes(E, N), color = "pink") +
+  geom_path(subset(pedestrian, TrajID %in% "6"), mapping = aes(E, N), color = "pink") +
+  ggtitle("TrajID: 6")
+
+grid.arrange(tra1, tra2, tra3, tra4, tra5, tra6, nrow = 2, top = "Visual Comparisons of the 6 trajectories")
 
 ```
 
