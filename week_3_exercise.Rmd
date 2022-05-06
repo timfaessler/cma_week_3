@@ -11,12 +11,13 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Preparation
 
-```{r}
+```{r, warning = FALSE, message = FALSE}
 library(readr)
 library(sf)
 library(dplyr)
 library(ggplot2)
 library(gridExtra)
+library(SimilarityMeasures)
 
 ```
 
@@ -151,3 +152,81 @@ grid.arrange(tra1, tra2, tra3, tra4, tra5, tra6, nrow = 2, top = "Visual Compari
 
 ```
 
+# Task 6
+
+```{r}
+
+traj_1 <- subset(pedestrian, TrajID %in% 1) 
+traj_1$TrajID <- NULL
+traj_1$DatetimeUTC <- NULL
+traj_1 <- as.matrix(traj_1)
+
+traj_2 <- subset(pedestrian, TrajID %in% 2)
+traj_2$TrajID <- NULL
+traj_2$DatetimeUTC <- NULL
+traj_2 <- as.matrix(traj_2)
+
+traj_3 <- subset(pedestrian, TrajID %in% 3)
+traj_3$TrajID <- NULL
+traj_3$DatetimeUTC <- NULL
+traj_3 <- as.matrix(traj_3)
+
+traj_4 <- subset(pedestrian, TrajID %in% 4)
+traj_4$TrajID <- NULL
+traj_4$DatetimeUTC <- NULL
+traj_4 <- as.matrix(traj_4)
+
+traj_5 <- subset(pedestrian, TrajID %in% 5)
+traj_5$TrajID <- NULL
+traj_5$DatetimeUTC <- NULL
+traj_5 <- as.matrix(traj_5)
+
+traj_6 <- subset(pedestrian, TrajID %in% 6)
+traj_6$TrajID <- NULL
+traj_6$DatetimeUTC <- NULL
+traj_6 <- as.matrix(traj_6)
+
+dtw_12 <- DTW(traj_1, traj_2, 4)
+dtw_13 <- DTW(traj_1, traj_3, 4)
+dtw_14 <- DTW(traj_1, traj_4, 4)
+dtw_15 <- DTW(traj_1, traj_5, 4)
+dtw_16 <- DTW(traj_1, traj_6, 4)
+
+edit_12 <- EditDist(traj_1, traj_2, 20)
+edit_13 <- EditDist(traj_1, traj_3, 20)
+edit_14 <- EditDist(traj_1, traj_4, 20)
+edit_15 <- EditDist(traj_1, traj_5, 20)
+edit_16 <- EditDist(traj_1, traj_6, 20)
+
+fre_12 <- Frechet(traj_1, traj_2)
+fre_13 <- Frechet(traj_1, traj_3)
+fre_14 <- Frechet(traj_1, traj_4)
+fre_15 <- Frechet(traj_1, traj_5)
+fre_16 <- Frechet(traj_1, traj_6)
+
+dtws <- data.frame(traj2 = c("2", "3", "4", "5", "6"), value = c(dtw_12, dtw_13, dtw_14, dtw_15, dtw_16))
+
+edits <- data.frame(traj2 = c("2", "3", "4", "5", "6"), value = c(edit_12, edit_13, edit_14, edit_15, edit_16))
+
+fres <- data.frame(traj2 = c("2", "3", "4", "5", "6"), value = c(fre_12, fre_13, fre_14, fre_15, fre_16))
+
+plot_dtw <- ggplot() +
+  geom_bar(dtws, mapping = aes(traj2, value, fill = traj2), stat = "identity") +
+  theme(legend.position="none") +
+  ggtitle("DTW")
+
+plot_edits <- ggplot() +
+  geom_bar(edits, mapping = aes(traj2, value, fill = traj2), stat = "identity")+
+  theme(legend.position="none") +
+  ggtitle("EditDist")
+
+plot_fres <- ggplot() +
+  geom_bar(fres, mapping = aes(traj2, value, fill = traj2), stat = "identity") +
+  theme(legend.position="none") +
+  ggtitle("Frechet")
+
+grid.arrange(plot_dtw, plot_edits, plot_fres, nrow = 2, top = "Computed similarities using different measures between trajectory 1 to all other trajectories")
+
+
+```
+The connections of the properties to the computed values is kind of hard to spot by eye, as most of the trajectories look the same. Trajectory 4 has a visually distinct trajectory which is kind of represented on a relatively low DTW and a medium Frechet value, but then again a much more similar (by eye) trajectory like 6 does have much smaller values.There seems to be a problem with the similarity computation sometimes (like DTV between 1 and 5 or Frechet between 1 and 2) but I couldn't make out the problem. 
