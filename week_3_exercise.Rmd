@@ -76,4 +76,31 @@ ggplot() +
   geom_point(caro, mapping = aes(E, N, color = static)) +
   ggtitle("Static vs moving points")
 ```
+# Task 4: Segment-based analysis
+
+```{r}
+rle_id <- function(vec){
+  x <- rle(vec)$lengths
+  as.factor(rep(seq_along(x), times=x))
+}
+
+caro <- caro %>% mutate(segment_id = rle_id(static))
+
+seg_colors <- filter(caro, static == FALSE)
+seg_long <- seg_colors %>% group_by(segment_id) %>% mutate(long = length(segment_id)) %>% filter(long >= 5)
+
+ggplot() +
+  geom_path(seg_colors, mapping = aes(E, N, color = seg_colors$segment_id)) +
+  geom_point(seg_colors, mapping = aes(E, N, color = seg_colors$segment_id)) +
+  scale_color_discrete("Segment Number") +
+  ggtitle("All Segments")
+
+ggplot() +
+  geom_path(seg_long, mapping = aes(E, N, color = seg_long$segment_id)) +
+  geom_point(seg_long, mapping = aes(E, N, color = seg_long$segment_id)) +
+  scale_color_discrete("Segment Number") +
+  ggtitle("All Segments with >= 5 Nodes")
+
+
+```
 
