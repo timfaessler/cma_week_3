@@ -9,22 +9,57 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
+# Preparation
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+```{r}
+library(readr)
+library(sf)
+library(dplyr)
+library(ggplot2)
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+data <- read_delim("caro60.csv", ",")
+caro <- data.frame(data)
+  
 
-```{r cars}
-summary(cars)
+caro <- caro %>%
+  mutate(
+    nMinus3 = sqrt((lag(E,3)-E)^2+(lag(N,3)-N)^2),
+    nMinus2 = sqrt((lag(E,2)-E)^2+(lag(N,2)-N)^2),
+    nMinus1 = sqrt((lag(E,1)-E)^2+(lag(N,1)-N)^2),
+    nPlus1  = sqrt((E-lead(E,1))^2+(N-lead(N,1))^2), 
+    nPlus2  = sqrt((E-lead(E,2))^2+(N-lead(N,2))^2),
+    nPlus3  = sqrt((E-lead(E,3))^2+(N-lead(N,3))^2)
+  )
+
+caro <- caro %>%
+  rowwise() %>%
+  mutate(
+    stepMean = mean(c(nMinus3, nMinus2, nMinus1,nPlus1,nPlus2, nPlus3))
+  ) %>%
+  ungroup()
+
+summary(caro$stepMean)
+
+hist(caro$stepMean)
+
+caro <- caro %>% 
+  ungroup() %>%
+  mutate(static = stepMean < 10)
+
+
+caro_filter <- caro %>%
+  filter(!static)
+
+caro_filter%>%
+  ggplot(aes(E, N))  +
+  geom_path() +
+  geom_point() +
+  coord_fixed() +
+  theme(legend.position = "bottom")
 ```
 
-## Including Plots
+# Task 1: Segmentation
+```{r}
 
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
